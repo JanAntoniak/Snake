@@ -22,19 +22,7 @@ import javax.swing.Timer;
 
 public class Game implements ActionListener, KeyListener {
 
-    //public final int WIDTH = 800, HEIGHT = 800;
-
-    public static Game game;
-
     public Render render;
-
-    private static int screenHeight;
-
-    private static int screenWidth;
-
-    private static int windowHeight;
-
-    private static int windowWidth;
 
     private JButton startButton;
 
