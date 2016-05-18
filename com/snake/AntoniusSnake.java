@@ -1,0 +1,1 @@
+//tu bedzie main i uruchamianie gry
