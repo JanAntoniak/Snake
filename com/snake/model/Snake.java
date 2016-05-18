@@ -4,6 +4,7 @@ import java.util.*;
 import java.lang.Math;
 
 public class Snake{
+    private int IDSnake;
     private Directions direction;
     private ArrayDeque<Point> body;
     private Field field;
@@ -24,5 +25,13 @@ public class Snake{
 
     public void EraseSnake() {
         body.clear();
+    }
+	
+    public set IDSnake(int IDSnake) {
+	this.IDSnake = IDSnake;
+    }
+
+    public get IDSnake() {
+	return this.IDSnake;
     }
 }
