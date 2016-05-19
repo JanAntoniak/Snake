@@ -6,7 +6,7 @@ public class MessageToClient {
 	public Snake snake2;
 	public Fruit fruit;
 	public ProtocolFlag protocolFlag;
-	MessageToServer(Snake snake1, Snake2 snake2, Fruit fruit, ProtocolFlag protocolFlag) {
+	MessageToClient(Snake snake1, Snake2 snake2, Fruit fruit, ProtocolFlag protocolFlag) {
 		this.snake1 = snake1;
 		this.snake2 = snake2;
 		this.fruit = fruit;
