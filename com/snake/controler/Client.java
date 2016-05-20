@@ -7,7 +7,7 @@ import java.nio.channels.SocketChannel;
 
 public class Client {
 
-    public Client() {
+    public Client(String host_name) {
 
     }
     public void createClient() throws Exception
@@ -16,7 +16,7 @@ public class Client {
         ObjectOutputStream oos = null;
         ObjectInputStream ois=null;
 
-        socket = SocketChannel.open(new InetSocketAddress(7777));
+        socket = SocketChannel.open(new InetSocketAddress(host_name, 7777));
         oos = new ObjectOutputStream(socket.socket().getOutputStream());
         ois = new ObjectInputStream(socket.socket().getInputStream());
 
