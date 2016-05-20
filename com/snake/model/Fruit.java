@@ -6,22 +6,22 @@ import java.util.Random;
 
 public class Fruit {
 
-    SnakeGame game;
-    Random random;
+	private Point position;
+    private SnakeGame game;
+    private Random random;
+    private int value;
 
     public Fruit(SnakeGame game) {
         this.game = game;
         this.random = new Random();
     }
     public void generateFruit() {
-        int xIndex = 20;//random.nextInt(48);
-        int yIndex = 20;random.nextInt(30);
-
-        while(game.getField().getType(xIndex, yIndex) != BrickType.EMPTY)
-        {
-            xIndex = random.nextInt(48);
-            yIndex = random.nextInt(30);
-        }
-        game.getField().setFruit(xIndex, yIndex);
+    	do {
+    		int position.x = random.nextInt(BoardPanel.WIDTH);
+       		int position.y = random.nextInt(BoardPanel.HEIGHT);
+        	value = random.nextInt(3) + 1;	
+ 	   	} while(game.getField().getType(position.x, position.y) != BrickType.EMPTY)
+       
+        game.getField().setFruit(position);
     }
 }

@@ -8,8 +8,8 @@ import javax.swing.JPanel;
 
 public class BoardPanel extends JPanel {
     
-	public static int COL_COUNT;
-    public static int ROW_COUNT;
+	public static final int BOARD_WIDTH = 48;
+    public static final int BOARD_HEIGHT 30;
     public static final int TILE_SIZE = 20;
     private static final Font FONT = new Font("Tahoma", Font.BOLD, 25);
     private Field field;

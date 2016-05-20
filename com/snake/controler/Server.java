@@ -46,7 +46,7 @@ public class Server{
 
             while(true) {
                 /**
-                 * Tutaj wysyłamy komunikaty miedzy serverem i klientem
+                 * Tutaj wysyłamy komunikaty miedzy serwerem i klientem
                  */
             }
         }
@@ -58,7 +58,6 @@ public class Server{
         {
             System.out.println("Other exception");
         }
-        System.out.print("4");
         socket.close();
         ois.close();
         server.close();

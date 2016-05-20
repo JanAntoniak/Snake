@@ -4,7 +4,7 @@ import java.util.*;
 import java.lang.Math;
 
 public class Snake{
-    private int IDSnake;
+	private int score;
     private Directions direction;
     private ArrayDeque<Point> body;
     private Field field;
@@ -33,5 +33,13 @@ public class Snake{
 
     public get IDSnake() {
 	return this.IDSnake;
+    }
+
+    public void eatFruit(Fruit f) {
+    	this.score += f.get;
+    }
+
+    public int getScore() {
+    	return score;
     }
 }

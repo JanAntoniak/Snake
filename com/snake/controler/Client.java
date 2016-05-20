@@ -7,11 +7,7 @@ import java.nio.channels.SocketChannel;
 
 public class Client {
 
-    public Client(String host_name) {
-
-    }
-    public void createClient() throws Exception
-    {
+    public Client(String host_name) throws Exception {
         SocketChannel socket = null;
         ObjectOutputStream oos = null;
         ObjectInputStream ois=null;
@@ -33,9 +29,12 @@ public class Client {
         oos.flush();
         oos.close();
         socket.close();
+        oos2.flush();
+        oos2.close();
+        socket2.close();
     }
+
     public static void main(String[] args) throws Exception {
         Client cl = new Client();
-        cl.createClient();
     }
 }
