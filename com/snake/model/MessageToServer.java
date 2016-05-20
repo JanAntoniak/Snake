@@ -1,10 +1,14 @@
 package com.snake;
 
-public class MessageToServer {
+public class MessageToServer implements Serializable {
 
 	public Direction direction;
-	public ProtocolFlag protocolFlag;
-	MessageToServer(Snake snake, int playerID, ProtocolFlag protocolFlag) {
-			
-	}
+    public ProtocolFlag protocolFlag;
+    MessageToServer(ProtocolFlag protocolFlag) {
+        this.protocolFlag = protocolFlag;
+    }
+    MessageToServer(ProtocolFlag protocolFlag, Direction direction) {
+        this.direction = direction;
+        this.protocolFlag = protocolFlag;
+    }
 }
