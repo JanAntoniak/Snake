@@ -23,15 +23,12 @@ public class Client {
         
         while(true) {
             
-            if(msgCl.protocolFlag == ProtocolFlag.EXIT)
+            if(msgCl.protocolFlag == ProtocolFlag.GAMEOVER)
                 break;
         }
         oos.flush();
         oos.close();
         socket.close();
-        oos2.flush();
-        oos2.close();
-        socket2.close();
     }
 
     public static void main(String[] args) throws Exception {
