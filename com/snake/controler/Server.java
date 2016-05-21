@@ -8,62 +8,72 @@ import java.nio.channels.SocketChannel;
 
 public class Server{
 
-    public Server() {
+    private static int actualState;
+    private static MessageToServer fromPlayer1;
+    private static fromPlayer2;
+    private static toClient;
 
+
+    public Server() {
+        int actualState = States.ESTABLISHING;
+        MessageToServer fromPlayer1 = new MessageToServer();
+        fromPlayer2 = new MessagerToServer();
+        toClient = new MessageToClient();
     }
 
-    public void createServer()throws Exception
+    public void Start()throws Exception
     {
         ServerSocketChannel server = null;
+
         ObjectInputStream ois1 = null;
         ObjectOutputStream oos1 = null;
-        SocketChannel socket = null;
+
         ObjectInputStream ois2 = null;
         ObjectOutputStream oos2 = null;
+
+        SocketChannel socket = null;
         SocketChannel socket2 = null;
 
-        server=ServerSocketChannel.open();
+
+        server = ServerSocketChannel.open();
         server.socket().bind(new InetSocketAddress(7777));
-        socket=server.accept();
-        socket2=server.accept();
+        socket = server.accept();
+        socket2 = server.accept();
 
         System.out.println("Nowe polaczenie przychodzace");
 
-        ois1=new ObjectInputStream(socket.socket().getInputStream());
+        ois1 = new ObjectInputStream(socket.socket().getInputStream());
         oos1 = new ObjectOutputStream(socket.socket().getOutputStream());
-        ois2 =new ObjectInputStream(socket2.socket().getInputStream());
+
+        ois2 = new ObjectInputStream(socket2.socket().getInputStream());
         oos2 = new ObjectOutputStream(socket2.socket().getOutputStream());
 
         try
         {
-            MessageToServer player1Message = (MessageToServer) (ois1.readObject());
-            MessageToServer player2Message = (MessageToServer) (ois2.readObject());
-            if(player1Message.protocolFlag != ProtocolFlag.REQUEST || player2Message.protocolFlag != ProtocolFlag.REQUEST)
-                System.exit(1);
-            oos1.writeObject(new MessageToClient(ProtocolFlag.ACCEPT));
-            oos2.writeObject(new MessageToClient(ProtocolFlag.ACCEPT));
 
-            int actualState = States.ESTABLISHING;
-            MessageToServer fromPlayer1;
-            MessageToServer fromPlayer2;
-            MessageToClient toClient = new MessageToClient(ProtocolFlag.ACCEPT);
 
             while(true) {
                 switch (actualState) {
                     case States.ESTABLISHING:
-                        fromPlayer1 = (MessageToServer) (ois1.readObject());
-                        fromPlayer2 = (MessageToServer) (ois2.readObject());
-
-                        if(fromPlayer1.protocolFlag != ProtocolFlag.REQUEST || fromPlayer2.protocolFlag != ProtocolFlag.REQUEST) {
-                            actualState = States.ERROR;
-                            break;
-                        }
-
-                        oos1.writeObject(toClient);
-                        oos2.writeObject(toClient);
-
-                        actualState = States.PREPARING;
+                        actualState = Establish();
                         break;
+
+                    case States.PREPARING:
+                        actualState = Prepare();
+                        break;
+
+                    case States.GAME:
+                        actualState = Move();
+                        break;
+
+                    case States.END:
+                        actualState = EndGame();
+                        break;
+
+                    case States.ERROR;
+                        actualState = ServeError();
+                        break;
+
 
                 }
             }
@@ -82,6 +92,60 @@ public class Server{
     }
     static public void main(String[] args) throws Exception {
         Server sv = new Server();
-        sv.createServer();
+        sv.Start();
     }
+
+    private States Establish() {
+        fromPlayer1 = (MessageToServer) (ois1.readObject());
+        fromPlayer2 = (MessageToServer) (ois2.readObject());
+
+        if(fromPlayer1.protocolFlag != ProtocolFlag.REQUEST || fromPlayer2.protocolFlag != ProtocolFlag.REQUEST)
+            return States.ERROR;
+
+        toClient.protocolFlag = ProtocolFlag.ACCEPT;
+
+        oos1.writeObject(toClient);
+        oos2.writeObject(toClient);
+
+        return States.PREPARING;
+    }
+
+    private States Prepare() {
+        fromPlayer1 = (MessageToServer) (ois1.readObject());
+        fromPlayer2 = (MessageToServer) (ois2.readObject());
+
+        if(fromPlayer1.protocolFlag != ProtocolFlag.STARTGAME || fromPlayer2.protocolFlag != ProtocolFlag.STARTGAME)
+            return States.END;
+
+        toClient.protocolFlag = ProtocolFlag.NEWGAME;
+
+        oos1.writeObject(toClient);
+        oos2.writeObject(toClient);
+
+        return States.GAME;
+    }
+
+    private States Move() {
+        //tu trzeba wysylac i odbierac wiadomosci do i od klientow odnosnie pozycji wunszy, ale tego ni umiem :D
+    }
+
+    private States End() {
+        toClient.protocolFlag = ProtocolFlag.GAMEOVER;
+
+        oos1.writeObject(toClient);
+        oos2.writeObject(toClient);
+
+        return States.ESTABLISHING;
+    }
+
+    private States ServeError() {
+        toClient.protocolFlag = ProtocolFlag.ERROR;
+
+        oos1.writeObject(toClient);
+        oos2.writeObject(toClient);
+
+        return States.ESTABLISHING;
+    }
+
+
 }

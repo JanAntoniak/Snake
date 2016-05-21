@@ -6,5 +6,7 @@ public enum ProtocolFlag {
         STARTGAME,
         NEWGAME,
         GAMESTATE,
-        ENDGAME
+        ENDGAME,
+        GAMEOVER,
+        ERROR
         }
