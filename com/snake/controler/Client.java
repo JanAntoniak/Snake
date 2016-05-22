@@ -6,24 +6,47 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 
 public class Client {
+    private static State actualState;
+    private static MessageToClient fromServer;
+    private static MessageToServer toServer;
 
-    public Client(String host_name) throws Exception {
+    public Client() {
+        actualState = States.ESTABLISHING;
+        fromServer = new MessageToClient();
+        toServer = new MessageToServer();
+    }
+
+
+    public Start(String hostName) throws Exception {
         SocketChannel socket = null;
         ObjectOutputStream oos = null;
         ObjectInputStream ois=null;
 
-        socket = SocketChannel.open(new InetSocketAddress(host_name, 7777));
+        socket = SocketChannel.open(new InetSocketAddress(hostName, 7777));
         oos = new ObjectOutputStream(socket.socket().getOutputStream());
         ois = new ObjectInputStream(socket.socket().getInputStream());
-
-        oos.writeObject(new MessageToServer(ProtocolFlag.REQUEST));
-        MessageToClient msgCl = (MessageToClient) ( ois.readObject() );
-        if(msgCl.protocolFlag != ProtocolFlag.ACCEPT)
-            System.exit(1);
         
         while(true) {
+
+            switch actualState {
+                case States.ESTABLISHING:
+                    actualState = Establish();
+                    break;
+
+                case States.PREPARING:
+                    actualState = Prepare();
+                    break;
+
+                case States.GAME:
+                    actualState = Move();
+                    break;
+
+                case States.ERROR:
+                    actualState = ServeError();
+
+            }
             
-            if(msgCl.protocolFlag == ProtocolFlag.GAMEOVER)
+            if(actualState == States.END)
                 break;
         }
         oos.flush();
@@ -31,7 +54,35 @@ public class Client {
         socket.close();
     }
 
-    public static void main(String[] args) throws Exception {
-        Client cl = new Client();
+    private States Establish() {
+        toServer.protocolFlag = ProtocolFlag.REQUEST;
+        oos.writeObject(toServer);
+        fromServer = (MessageToClient) ( ois.readObject() );
+
+        if(fromServer.protocolFlag == ProtocolFlag.ACCEPT)
+            return States.ESTABLISHING;
+        else
+            return States.ERROR;
     }
+
+    private States Prepare() {
+        toServer.protocolFlag = ProtocolFlag.STARTGAME;
+        oos.writeObject(toServer);
+        fromServer = (MessageToClient) (ois.readObject());
+
+        if(fromServer.protocolFlag == ProtocolFlag.ACCEPT)
+            return States.GAME;
+        else
+            return States.ERROR;
+    }
+
+    private States Game() {
+        //sprawdzanie czy byla kolizja po odebraniu komunikatu od serwera
+        //wysylanie kierunku
+    }
+
+    private States ServeError() {
+        //wyswietlenie komunikatu i decyzja czy laczyc sie od nowa, czy zamknac aplikacje
+    }
+
 }

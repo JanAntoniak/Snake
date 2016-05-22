@@ -8,14 +8,14 @@ import java.nio.channels.SocketChannel;
 
 public class Server{
 
-    private static int actualState;
+    private static State actualState;
     private static MessageToServer fromPlayer1;
-    private static fromPlayer2;
-    private static toClient;
+    private static MessageToServer fromPlayer2;
+    private static MessageToClient toPlayer;
 
 
     public Server() {
-        int actualState = States.ESTABLISHING;
+        actualState = States.ESTABLISHING;
         MessageToServer fromPlayer1 = new MessageToServer();
         fromPlayer2 = new MessagerToServer();
         toClient = new MessageToClient();
@@ -102,10 +102,10 @@ public class Server{
         if(fromPlayer1.protocolFlag != ProtocolFlag.REQUEST || fromPlayer2.protocolFlag != ProtocolFlag.REQUEST)
             return States.ERROR;
 
-        toClient.protocolFlag = ProtocolFlag.ACCEPT;
+        toPlayer.protocolFlag = ProtocolFlag.ACCEPT;
 
-        oos1.writeObject(toClient);
-        oos2.writeObject(toClient);
+        oos1.writeObject(toPlayer);
+        oos2.writeObject(toPlayer);
 
         return States.PREPARING;
     }
