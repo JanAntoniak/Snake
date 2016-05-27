@@ -13,7 +13,6 @@ public class BoardPanel extends JPanel {
     public static final int BOARD_HEIGHT = 48;
     public static final int TILE_SIZE = 20;
     private static final Font FONT = new Font("Tahoma", Font.BOLD, 25);
-    //private Field field;
     private ClientFrame clientFrame;
 
     public BoardPanel(ClientFrame clientFrame) {
