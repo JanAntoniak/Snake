@@ -26,7 +26,7 @@ public class Server {
         fromPlayer1 = new MessageToServer();
         fromPlayer2 = new MessageToServer();
         toClient = new MessageToClient();
-        this.timer = new Clock(1.5f);
+        this.timer = new Clock(2.5f);
     }
 
     public void Start() throws Exception {
@@ -63,12 +63,10 @@ public class Server {
                         break;
 
                     case PREPARING:
-                        System.out.print("prepare ");
                         actualState = Prepare();
                         break;
 
                     case GAME:
-                        System.out.print("game ");
                         actualState = Move();
                         break;
 
@@ -161,10 +159,13 @@ public class Server {
                 serverController.updateGame();
             }
 
+
             setMessageToClient(serverController.getSnake1().getIDSnake());
+            System.out.println(serverController.getSnake1().isWinner());
             sendMessageToClient(serverController.getSnake1().getIDSnake());
 
             setMessageToClient(serverController.getSnake2().getIDSnake());
+            System.out.println(serverController.getSnake2().isWinner());
             sendMessageToClient(serverController.getSnake2().getIDSnake());
 
             long delta = (System.nanoTime() - start) / 1000000L;

@@ -37,12 +37,10 @@ public class Client {
                     break;
 
                 case PREPARING:
-                    System.out.print("pre ");
                     actualState = Prepare();
                     break;
 
                 case GAME:
-                    System.out.print("game");
                     actualState = Game();
                     break;
 
@@ -85,8 +83,6 @@ public class Client {
         oos.flush();
         fromServer = (MessageToClient) (ois.readObject());
 
-
-        System.out.println(fromServer.getProtocolFlag());
         if (fromServer.getProtocolFlag() == ProtocolFlag.NEWGAME) {
             return States.GAME;
         }
@@ -95,7 +91,7 @@ public class Client {
         }
     }
 
-    private synchronized States Game() throws IOException, ClassNotFoundException, InterruptedException {
+    private States Game() throws IOException, ClassNotFoundException, InterruptedException {
 
         toServer = new MessageToServer();
         toServer.setProtocolFlag(ProtocolFlag.STARTGAME);
@@ -117,6 +113,7 @@ public class Client {
         }
         clientFrame.repaint();
         if(fromServer.isGameOver() == true) {
+            clientFrame.getSnakeOfMine().setWinner(fromServer.getMySnake().isWinner());
             clientFrame.setGameOver(true);
             clientFrame.repaint();
             return States.PREPARING;
