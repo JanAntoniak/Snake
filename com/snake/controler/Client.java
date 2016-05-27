@@ -1,14 +1,20 @@
 package com.snake;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 
 public class Client {
-    private static State actualState;
+
+    private ClientFrame clientFrame;
+    private static States actualState;
     private static MessageToClient fromServer;
     private static MessageToServer toServer;
+    private ObjectOutputStream oos = null;
+    private ObjectInputStream ois = null;
+    private boolean windowOpen = false;
 
     public Client() {
         actualState = States.ESTABLISHING;
@@ -16,37 +22,36 @@ public class Client {
         toServer = new MessageToServer();
     }
 
-
-    public Start(String hostName) throws Exception {
+    public void Start(String hostName) throws Exception {
         SocketChannel socket = null;
-        ObjectOutputStream oos = null;
-        ObjectInputStream ois=null;
 
         socket = SocketChannel.open(new InetSocketAddress(hostName, 7777));
         oos = new ObjectOutputStream(socket.socket().getOutputStream());
         ois = new ObjectInputStream(socket.socket().getInputStream());
-        
-        while(true) {
 
-            switch actualState {
-                case States.ESTABLISHING:
+        while (true) {
+
+            switch (actualState) {
+                case ESTABLISHING:
                     actualState = Establish();
                     break;
 
-                case States.PREPARING:
+                case PREPARING:
+                    System.out.print("pre ");
                     actualState = Prepare();
                     break;
 
-                case States.GAME:
-                    actualState = Move();
+                case GAME:
+                    System.out.print("game");
+                    actualState = Game();
                     break;
 
-                case States.ERROR:
+                case ERROR:
                     actualState = ServeError();
 
             }
-            
-            if(actualState == States.END)
+
+            if (actualState == States.END)
                 break;
         }
         oos.flush();
@@ -54,35 +59,80 @@ public class Client {
         socket.close();
     }
 
-    private States Establish() {
-        toServer.protocolFlag = ProtocolFlag.REQUEST;
+    private States Establish() throws IOException, ClassNotFoundException {
+        toServer.setProtocolFlag(ProtocolFlag.REQUEST);
+        oos.reset();
         oos.writeObject(toServer);
-        fromServer = (MessageToClient) ( ois.readObject() );
-
-        if(fromServer.protocolFlag == ProtocolFlag.ACCEPT)
-            return States.ESTABLISHING;
+        oos.flush();
+        fromServer = (MessageToClient) (ois.readObject());
+        if (fromServer.getProtocolFlag() == ProtocolFlag.ACCEPT)
+            return States.PREPARING;
         else
             return States.ERROR;
     }
 
-    private States Prepare() {
-        toServer.protocolFlag = ProtocolFlag.STARTGAME;
+    private synchronized States Prepare() throws IOException, ClassNotFoundException, InterruptedException {
+        if(windowOpen == false) {
+            clientFrame = new ClientFrame();
+            windowOpen = true;
+        }
+        clientFrame.setReady(false);
+        while(clientFrame.getReady() != true)
+            continue;
+        toServer = new MessageToServer(ProtocolFlag.STARTGAME);
+        oos.reset();
         oos.writeObject(toServer);
+        oos.flush();
         fromServer = (MessageToClient) (ois.readObject());
 
-        if(fromServer.protocolFlag == ProtocolFlag.ACCEPT)
+
+        System.out.println(fromServer.getProtocolFlag());
+        if (fromServer.getProtocolFlag() == ProtocolFlag.NEWGAME) {
             return States.GAME;
-        else
+        }
+        else {
             return States.ERROR;
+        }
     }
 
-    private States Game() {
-        //sprawdzanie czy byla kolizja po odebraniu komunikatu od serwera
-        //wysylanie kierunku
+    private synchronized States Game() throws IOException, ClassNotFoundException, InterruptedException {
+
+        toServer = new MessageToServer();
+        toServer.setProtocolFlag(ProtocolFlag.STARTGAME);
+        toServer.setDirection(clientFrame.getDirection());
+        oos.reset();
+        oos.writeObject(toServer);
+        oos.flush();
+
+        fromServer = new MessageToClient();
+        fromServer = (MessageToClient) (ois.readObject());
+        clientFrame.setGameOver(fromServer.isGameOver());
+        clientFrame.setNewGame(fromServer.isNewGame());
+        if(fromServer.isGameOver() != true) {
+            clientFrame.setNewGame(false);
+            clientFrame.getField().clearField();
+            clientFrame.setFruit(fromServer.getFruit());
+            clientFrame.setSnakeOfMine(fromServer.getMySnake());
+            clientFrame.setSnakeOfOpponent(fromServer.getOppSnake());
+        }
+        clientFrame.repaint();
+        if(fromServer.isGameOver() == true) {
+            clientFrame.setGameOver(true);
+            clientFrame.repaint();
+            return States.PREPARING;
+        }
+        return States.GAME;
     }
 
-    private States ServeError() {
+    private States ServeError() throws IOException, ClassNotFoundException {
         //wyswietlenie komunikatu i decyzja czy laczyc sie od nowa, czy zamknac aplikacje
+        return States.END;
     }
 
+    public static void main(String args[]) throws Exception {
+        Client cl = new Client();
+        cl.Start("127.0.0.1");
+    }
 }
+
+
