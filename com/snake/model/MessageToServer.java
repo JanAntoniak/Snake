@@ -3,10 +3,10 @@ package com.snake;
 import java.io.Serializable;
 
 public class MessageToServer implements Serializable {
-    
+
     private Direction direction;
     private ProtocolFlag protocolFlag;
-    
+
     MessageToServer(ProtocolFlag protocolFlag) {
         this.protocolFlag = protocolFlag;
         this.direction = Direction.UP;

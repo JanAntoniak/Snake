@@ -31,6 +31,21 @@ public class ServerController {
             fruit.generateFruit();
         } else if(collision == BrickType.SNAKE1 || collision == BrickType.SNAKE2
                 || collision2 == BrickType.SNAKE1 || collision2 == BrickType.SNAKE2) {
+            if(((collision == BrickType.SNAKE1 || collision == BrickType.SNAKE2)
+               && collision2 != BrickType.SNAKE2 && collision2 != BrickType.SNAKE1) &&
+                    !snake1.GetHead().Equals(snake2.GetHead())) {
+                snake2.setWinner(true);
+                System.out.println(snake1.GetHead().x+", "+snake1.GetHead().y+"  "+
+                snake1.GetHead().x+", "+snake1.GetHead().y + " 1 " + snake1.GetHead().Equals(snake2.GetHead()));
+            }
+            if(((collision2 == BrickType.SNAKE2 || collision2 == BrickType.SNAKE1) &&
+                    collision != BrickType.SNAKE1 && collision != BrickType.SNAKE2 ) &&
+                    !snake1.GetHead().Equals(snake2.GetHead())) {
+                snake1.setWinner(true);
+                System.out.println(snake1.GetHead().x+", "+snake1.GetHead().y+"  "+
+                        snake1.GetHead().x+", "+snake1.GetHead().y + " 2 " + snake1.GetHead().Equals(snake2.GetHead()));
+            }
+
             isGameOver = true;
             timer.setPaused(true);
         }
@@ -60,8 +75,8 @@ public class ServerController {
         }
 
         head = snake.GetHead();
-        if(head.x < 0 || head.x >= BoardPanel.BOARD_HEIGHT ||
-                head.y < 0 || head.y >= BoardPanel.BOARD_WIDTH ) {
+        if(head.x < 0 || head.x >= BoardPanel.BOARD_WIDTH ||
+                head.y < 0 || head.y >= BoardPanel.BOARD_HEIGHT) {
             if(snake.getIDSnake() == 1)
                 return  BrickType.SNAKE1;
             else return BrickType.SNAKE2;

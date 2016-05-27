@@ -4,13 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayDeque;
 
 public class MessageToClient implements Serializable {
-    
+
     private Snake MySnake;
     private Snake OppSnake;
     private Fruit fruit;
     private boolean gameOver;
     private boolean newGame;
-    
+
     MessageToClient() {
         MySnake = new Snake();
         OppSnake = new Snake();
