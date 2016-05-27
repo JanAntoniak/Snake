@@ -4,13 +4,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.util.ArrayDeque;
 import javax.swing.JPanel;
 
 public class BoardPanel extends JPanel {
     
-	public static final int BOARD_WIDTH = 30;
-    public static final int BOARD_HEIGHT = 48;
+	public static final int BOARD_HEIGHT = 30;
+    public static final int BOARD_WIDTH = 48;
     public static final int TILE_SIZE = 20;
     private static final Font FONT = new Font("Tahoma", Font.BOLD, 25);
     private ClientFrame clientFrame;
@@ -19,7 +18,7 @@ public class BoardPanel extends JPanel {
         super();
         this.clientFrame = clientFrame;
 
-        setPreferredSize(new Dimension(BOARD_HEIGHT * TILE_SIZE, BOARD_WIDTH * TILE_SIZE));
+        setPreferredSize(new Dimension(BOARD_WIDTH * TILE_SIZE, BOARD_HEIGHT * TILE_SIZE));
         setBackground(new Color(60, 63, 65));
     }
 
@@ -27,8 +26,8 @@ public class BoardPanel extends JPanel {
     public synchronized void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        for(int x = 0; x < BOARD_HEIGHT; x++) {
-            for(int y = 0; y < BOARD_WIDTH; y++) {
+        for(int x = 0; x < BOARD_WIDTH; x++) {
+            for(int y = 0; y < BOARD_HEIGHT; y++) {
                 BrickType type = clientFrame.getField().getType(x, y);
                 if(type != BrickType.EMPTY) {
                     drawBrick(x * TILE_SIZE, y * TILE_SIZE, type, g);
@@ -38,8 +37,8 @@ public class BoardPanel extends JPanel {
 
         g.setColor(Color.BLACK);
         g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
-        for(int x = 0; x < BOARD_HEIGHT; x++) {
-            for(int y = 0; y < BOARD_WIDTH; y++) {
+        for(int x = 0; x < BOARD_WIDTH; x++) {
+            for(int y = 0; y < BOARD_HEIGHT; y++) {
                 g.drawLine(x * TILE_SIZE, 0, x * TILE_SIZE, getHeight());
                 g.drawLine(0, y * TILE_SIZE, getWidth(), y * TILE_SIZE);
             }
@@ -53,20 +52,28 @@ public class BoardPanel extends JPanel {
 
             String largeMessage = null;
             String smallMessage = null;
+            String winner = null;
             if(clientFrame.isNewGame()) {
                 largeMessage = "Get ready to play!";
                 smallMessage = "Press Enter to start";
+                winner = "";
             } else if(clientFrame.isGameOver()) {
+                if(clientFrame.getSnakeOfMine().isWinner() == true)
+                    winner = "YOU WIN!";
+                else
+                    winner = "YOU LOST!";
+
                 largeMessage = "Game Over!";
                 smallMessage = "Press Enter to Restart";
             }
             g.setFont(FONT);
+            g.drawString(winner, centerX - g.getFontMetrics().stringWidth(winner) / 2, centerY - 100);
             g.drawString(largeMessage, centerX - g.getFontMetrics().stringWidth(largeMessage) / 2, centerY - 50);
             g.drawString(smallMessage, centerX - g.getFontMetrics().stringWidth(smallMessage) / 2, centerY + 50);
         }
     }
 
-    private synchronized void drawBrick(int x, int y, BrickType type, Graphics g) {
+    private void drawBrick(int x, int y, BrickType type, Graphics g) {
 
         switch(type) {
 
