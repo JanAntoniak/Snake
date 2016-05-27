@@ -2,9 +2,6 @@ package com.snake;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.BorderLayout;
 import java.io.Serializable;
 
 public class SidePanel extends JPanel implements Serializable{
@@ -21,8 +18,7 @@ public class SidePanel extends JPanel implements Serializable{
 
     public SidePanel(ClientFrame clientFrame) {
         this.clientFrame = clientFrame;
-        setPreferredSize(new Dimension(200, 1050));
-        setPreferredSize(new Dimension(300, BoardPanel.BOARD_WIDTH * BoardPanel.BOARD_HEIGHT ));
+        setPreferredSize(new Dimension(300, BoardPanel.TILE_SIZE * BoardPanel.BOARD_HEIGHT));
         setBackground( new Color(73, 144, 68) );
     }
 
