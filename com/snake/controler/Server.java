@@ -35,7 +35,6 @@ public class Server {
         SocketChannel socket = null;
         SocketChannel socket2 = null;
 
-
         server = ServerSocketChannel.open();
         server.socket().bind(new InetSocketAddress(7777));
         socket = server.accept();
@@ -108,12 +107,8 @@ public class Server {
 
         toClient.setProtocolFlag(ProtocolFlag.ACCEPT);
 
-        oos1.reset();
-        oos1.writeObject(toClient);
-        oos1.flush();
-        oos2.reset();
-        oos2.writeObject(toClient);
-        oos2.flush();
+        sendMessageToClient(serverController.getSnake1().getIDSnake());
+        sendMessageToClient(serverController.getSnake2().getIDSnake());
 
         return States.PREPARING;
     }
@@ -127,12 +122,8 @@ public class Server {
 
         toClient.setProtocolFlag(ProtocolFlag.NEWGAME);
 
-        oos1.reset();
-        oos1.writeObject(toClient);
-        oos1.flush();
-        oos2.reset();
-        oos2.writeObject(toClient);
-        oos2.flush();
+        sendMessageToClient(serverController.getSnake1().getIDSnake());
+        sendMessageToClient(serverController.getSnake2().getIDSnake());
 
         serverController.resetGame();
         return States.GAME;
@@ -161,11 +152,9 @@ public class Server {
 
 
             setMessageToClient(serverController.getSnake1().getIDSnake());
-            System.out.println(serverController.getSnake1().isWinner());
             sendMessageToClient(serverController.getSnake1().getIDSnake());
 
             setMessageToClient(serverController.getSnake2().getIDSnake());
-            System.out.println(serverController.getSnake2().isWinner());
             sendMessageToClient(serverController.getSnake2().getIDSnake());
 
             long delta = (System.nanoTime() - start) / 1000000L;
@@ -184,12 +173,8 @@ public class Server {
     private States EndGame() throws IOException {
         toClient.setProtocolFlag(ProtocolFlag.GAMEOVER);
 
-        oos1.reset();
-        oos1.writeObject(toClient);
-        oos1.flush();
-        oos2.reset();
-        oos2.writeObject(toClient);
-        oos2.flush();
+        sendMessageToClient(serverController.getSnake1().getIDSnake());
+        sendMessageToClient(serverController.getSnake2().getIDSnake());
 
         return States.ESTABLISHING;
     }
@@ -197,12 +182,8 @@ public class Server {
     private States ServeError() throws IOException {
         toClient.setProtocolFlag(ProtocolFlag.ERROR);
 
-        oos1.reset();
-        oos1.writeObject(toClient);
-        oos1.flush();
-        oos2.reset();
-        oos2.writeObject(toClient);
-        oos2.flush();
+        sendMessageToClient(serverController.getSnake1().getIDSnake());
+        sendMessageToClient(serverController.getSnake2().getIDSnake());
 
         return States.ESTABLISHING;
     }
