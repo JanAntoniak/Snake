@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 
 public class ClientFrame extends JFrame {
@@ -27,7 +29,14 @@ public class ClientFrame extends JFrame {
     public ClientFrame() {
         super("Snake");
         setLayout(new BorderLayout());
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+            	// Here we can add whatever we want to
+                System.exit(0);
+            }
+        });
+        
         setResizable(false);
 
         directions = new LinkedList<>();
