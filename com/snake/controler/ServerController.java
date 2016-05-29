@@ -35,15 +35,11 @@ public class ServerController {
                && collision2 != BrickType.SNAKE2 && collision2 != BrickType.SNAKE1) &&
                     !snake1.GetHead().Equals(snake2.GetHead())) {
                 snake2.setWinner(true);
-                System.out.println(snake1.GetHead().x+", "+snake1.GetHead().y+"  "+
-                snake1.GetHead().x+", "+snake1.GetHead().y + " 1 " + snake1.GetHead().Equals(snake2.GetHead()));
             }
             if(((collision2 == BrickType.SNAKE2 || collision2 == BrickType.SNAKE1) &&
                     collision != BrickType.SNAKE1 && collision != BrickType.SNAKE2 ) &&
                     !snake1.GetHead().Equals(snake2.GetHead())) {
                 snake1.setWinner(true);
-                System.out.println(snake1.GetHead().x+", "+snake1.GetHead().y+"  "+
-                        snake1.GetHead().x+", "+snake1.GetHead().y + " 2 " + snake1.GetHead().Equals(snake2.GetHead()));
             }
 
             isGameOver = true;

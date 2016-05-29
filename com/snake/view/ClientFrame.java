@@ -6,6 +6,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.LinkedList;
 
 public class ClientFrame extends JFrame {
@@ -24,15 +25,21 @@ public class ClientFrame extends JFrame {
     private Snake snake1;
     private Snake snake2;
     private Fruit fruit;
+    private final Client client;
+    private boolean exit = false;
 
-
-    public ClientFrame() {
+    public ClientFrame(final Client client) {
         super("Snake");
+        this.client = client;
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-            	// Here we can add whatever we want to
+                try {
+                    client.closeAll();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
                 System.exit(0);
             }
         });
@@ -173,10 +180,8 @@ public class ClientFrame extends JFrame {
                         if(isNewGame || isGameOver) {
                             setReady(true);
                             isNewGame = true;
-                            //resetGame();
                         }
                         break;
-
                 }
             }
 
@@ -193,4 +198,11 @@ public class ClientFrame extends JFrame {
         return ready;
     }
 
+    public boolean isExit() {
+        return exit;
+    }
+
+    public void setExit(boolean exit) {
+        this.exit = exit;
+    }
 }

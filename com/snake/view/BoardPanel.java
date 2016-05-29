@@ -25,7 +25,7 @@ public class BoardPanel extends JPanel {
     @Override
     public synchronized void paintComponent(Graphics g) {
         super.paintComponent(g);
-
+        System.out.print("qweqweqweqw ");
         for(int x = 0; x < BOARD_WIDTH; x++) {
             for(int y = 0; y < BOARD_HEIGHT; y++) {
                 BrickType type = clientFrame.getField().getType(x, y);
@@ -71,6 +71,19 @@ public class BoardPanel extends JPanel {
             g.drawString(largeMessage, centerX - g.getFontMetrics().stringWidth(largeMessage) / 2, centerY - 50);
             g.drawString(smallMessage, centerX - g.getFontMetrics().stringWidth(smallMessage) / 2, centerY + 50);
         }
+        if(clientFrame.isExit() == true) {
+            int centerX = getWidth() / 2;
+            int centerY = getHeight() / 2;
+            String error = "There was an connection error.";
+            String close = "Close the application, please.";
+            g.setColor(new Color(178, 177, 163) );
+            g.fillRect(0, 0, TILE_SIZE*BOARD_WIDTH, TILE_SIZE*BOARD_HEIGHT);
+            g.setColor(new Color(1, 1, 1) );
+            g.setFont(FONT);
+            g.drawString(error, centerX - g.getFontMetrics().stringWidth(error) / 2, centerY - 50);
+            g.drawString(close, centerX - g.getFontMetrics().stringWidth(close) / 2, centerY + 50);
+        }
+
     }
 
     private void drawBrick(int x, int y, BrickType type, Graphics g) {
