@@ -1,39 +1,39 @@
 package com.snake;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-public class Server{
+public class Server {
 
-    private static State actualState;
+    private static States actualState;
     private static MessageToServer fromPlayer1;
     private static MessageToServer fromPlayer2;
-    private static MessageToClient toPlayer;
-
+    private static MessageToClient toClient;
+    ObjectInputStream ois1 = null;
+    ObjectOutputStream oos1 = null;
+    ObjectInputStream ois2 = null;
+    ObjectOutputStream oos2 = null;
+    ServerController serverController = null;
+    public Clock timer;
+    private static final long FRAME_TIME = 1500L / 50L;
 
     public Server() {
         actualState = States.ESTABLISHING;
-        MessageToServer fromPlayer1 = new MessageToServer();
-        fromPlayer2 = new MessagerToServer();
+        fromPlayer1 = new MessageToServer();
+        fromPlayer2 = new MessageToServer();
         toClient = new MessageToClient();
+        this.timer = new Clock(2.5f);
     }
 
-    public void Start()throws Exception
-    {
+    public void Start() throws Exception {
         ServerSocketChannel server = null;
-
-        ObjectInputStream ois1 = null;
-        ObjectOutputStream oos1 = null;
-
-        ObjectInputStream ois2 = null;
-        ObjectOutputStream oos2 = null;
 
         SocketChannel socket = null;
         SocketChannel socket2 = null;
-
 
         server = ServerSocketChannel.open();
         server.socket().bind(new InetSocketAddress(7777));
@@ -42,110 +42,182 @@ public class Server{
 
         System.out.println("Nowe polaczenie przychodzace");
 
+        serverController = new ServerController();
+        serverController.getSnake1().setIDSnake(1);
+        serverController.getSnake2().setIDSnake(2);
+
         ois1 = new ObjectInputStream(socket.socket().getInputStream());
         oos1 = new ObjectOutputStream(socket.socket().getOutputStream());
 
         ois2 = new ObjectInputStream(socket2.socket().getInputStream());
         oos2 = new ObjectOutputStream(socket2.socket().getOutputStream());
 
-        try
-        {
+        try {
 
 
-            while(true) {
+            while (true) {
                 switch (actualState) {
-                    case States.ESTABLISHING:
+                    case ESTABLISHING:
                         actualState = Establish();
                         break;
 
-                    case States.PREPARING:
+                    case PREPARING:
                         actualState = Prepare();
                         break;
 
-                    case States.GAME:
+                    case GAME:
                         actualState = Move();
                         break;
 
-                    case States.END:
+                    case END:
                         actualState = EndGame();
                         break;
 
-                    case States.ERROR;
+                    case ERROR:
                         actualState = ServeError();
                         break;
 
 
                 }
             }
-        }
-        catch(ClassNotFoundException e)
-        {
+        } catch (ClassNotFoundException e) {
             System.out.println("ClassNotFound");
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("Other exception");
+            e.printStackTrace();
         }
         socket.close();
         ois1.close();
         server.close();
     }
+
     static public void main(String[] args) throws Exception {
         Server sv = new Server();
         sv.Start();
     }
 
-    private States Establish() {
+    private States Establish() throws IOException, ClassNotFoundException {
+
         fromPlayer1 = (MessageToServer) (ois1.readObject());
         fromPlayer2 = (MessageToServer) (ois2.readObject());
 
-        if(fromPlayer1.protocolFlag != ProtocolFlag.REQUEST || fromPlayer2.protocolFlag != ProtocolFlag.REQUEST)
+
+        if (fromPlayer1.getProtocolFlag() != ProtocolFlag.REQUEST || fromPlayer2.getProtocolFlag() != ProtocolFlag.REQUEST)
             return States.ERROR;
 
-        toPlayer.protocolFlag = ProtocolFlag.ACCEPT;
+        toClient.setProtocolFlag(ProtocolFlag.ACCEPT);
 
-        oos1.writeObject(toPlayer);
-        oos2.writeObject(toPlayer);
+        sendMessageToClient(serverController.getSnake1().getIDSnake());
+        sendMessageToClient(serverController.getSnake2().getIDSnake());
 
         return States.PREPARING;
     }
 
-    private States Prepare() {
+    private States Prepare() throws IOException, ClassNotFoundException, InterruptedException {
         fromPlayer1 = (MessageToServer) (ois1.readObject());
         fromPlayer2 = (MessageToServer) (ois2.readObject());
 
-        if(fromPlayer1.protocolFlag != ProtocolFlag.STARTGAME || fromPlayer2.protocolFlag != ProtocolFlag.STARTGAME)
+        if (fromPlayer1.getProtocolFlag() != ProtocolFlag.STARTGAME || fromPlayer2.getProtocolFlag() != ProtocolFlag.STARTGAME)
             return States.END;
 
-        toClient.protocolFlag = ProtocolFlag.NEWGAME;
+        toClient.setProtocolFlag(ProtocolFlag.NEWGAME);
 
-        oos1.writeObject(toClient);
-        oos2.writeObject(toClient);
+        sendMessageToClient(serverController.getSnake1().getIDSnake());
+        sendMessageToClient(serverController.getSnake2().getIDSnake());
 
+        serverController.resetGame();
         return States.GAME;
     }
 
-    private States Move() {
-        //tu trzeba wysylac i odbierac wiadomosci do i od klientow odnosnie pozycji wunszy, ale tego ni umiem :D
+    private synchronized States Move() throws IOException, ClassNotFoundException, InterruptedException {
+
+        serverController.setNewGame(true);
+        serverController.setGameOver(false);
+        while (!serverController.isGameOver()) {
+
+            long start = System.nanoTime();
+            timer.update();
+
+            fromPlayer1 = (MessageToServer) (ois1.readObject());
+            fromPlayer2 = (MessageToServer) (ois2.readObject());
+
+            if (fromPlayer1.getDirection() != null)
+                serverController.getSnake1().setDirections(fromPlayer1.getDirection());
+            if (fromPlayer2.getDirection() != null)
+                serverController.getSnake2().setDirections(fromPlayer2.getDirection());
+
+            if (timer.hasElapsedCycle()) {
+                serverController.updateGame();
+            }
+
+
+            setMessageToClient(serverController.getSnake1().getIDSnake());
+            sendMessageToClient(serverController.getSnake1().getIDSnake());
+
+            setMessageToClient(serverController.getSnake2().getIDSnake());
+            sendMessageToClient(serverController.getSnake2().getIDSnake());
+
+            long delta = (System.nanoTime() - start) / 1000000L;
+            if (delta < FRAME_TIME) {
+                try {
+                    Thread.sleep(FRAME_TIME - delta);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return States.PREPARING;
     }
 
-    private States End() {
-        toClient.protocolFlag = ProtocolFlag.GAMEOVER;
+    private States EndGame() throws IOException {
+        toClient.setProtocolFlag(ProtocolFlag.GAMEOVER);
 
-        oos1.writeObject(toClient);
-        oos2.writeObject(toClient);
+        sendMessageToClient(serverController.getSnake1().getIDSnake());
+        sendMessageToClient(serverController.getSnake2().getIDSnake());
 
         return States.ESTABLISHING;
     }
 
-    private States ServeError() {
-        toClient.protocolFlag = ProtocolFlag.ERROR;
+    private States ServeError() throws IOException {
+        toClient.setProtocolFlag(ProtocolFlag.ERROR);
 
-        oos1.writeObject(toClient);
-        oos2.writeObject(toClient);
+        sendMessageToClient(serverController.getSnake1().getIDSnake());
+        sendMessageToClient(serverController.getSnake2().getIDSnake());
 
         return States.ESTABLISHING;
     }
 
+    public void setMessageToClient(int IDSnake) {
+
+        switch(IDSnake) {
+            case 1:
+                toClient.setMySnake(serverController.getSnake1());
+                toClient.setOppSnake(serverController.getSnake2());
+                break;
+            case 2:
+                toClient.setMySnake(serverController.getSnake2());
+                toClient.setOppSnake(serverController.getSnake1());
+                break;
+        }
+        toClient.setFruit(serverController.getFruit());
+        toClient.setGameOver(serverController.isGameOver());
+    }
+
+    public void sendMessageToClient(int IDSnake) throws IOException {
+
+        switch(IDSnake) {
+            case 1:
+                oos1.reset();
+                oos1.writeObject(toClient);
+                oos1.flush();
+                break;
+            case 2:
+                oos2.reset();
+                oos2.writeObject(toClient);
+                oos2.flush();
+                break;
+        }
+    }
 
 }
