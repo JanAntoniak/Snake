@@ -2,29 +2,59 @@ package com.snake.controller;
 
 import com.snake.model.*;
 import com.snake.view.*;
-
+/**
+ * The {@code ServerController} class is responsible for handling much of the game's logic.
+ *
+ */
 public class ServerController {
 
+	/**
+	 * The Field instance.
+	 */
     private Field field;
+    
+    /**
+	 * The Snake1 instance.
+	 */
     private Snake snake1;
+    
+    /**
+	 * The Snake2 instance.
+	 */
     private Snake snake2;
+    
+    /**
+	 * The Fruit instance.
+	 */
     private Fruit fruit;
+    
+    /**
+	 * Flag that is true when there is called new game
+	 */
     private boolean isNewGame;
+    
+    /**
+	 * Flag that is true when the game is over
+	 */
     private boolean isGameOver;
+    
+    /**
+	 * The Clock instance. Clock determines the speed of 
+	 * calculating positions and sending messages to clients 
+	 */
     private Clock timer;
 
+    /**
+    * Constructor of this class. 
+    */
     public ServerController() {
         this.resetGame();
     }
 
-    public boolean isNewGame() {
-        return isNewGame;
-    }
-
-    public boolean isGameOver() {
-        return isGameOver;
-    }
-
+    /**
+    * UpdateGame is a method that check if there is any collision,
+     * if so it set Snake1 or Snake2 as winner, isGameOver as true and pause timer 
+    */
     public synchronized void updateGame() {
 
         BrickType collision = updateSnake(snake1);
@@ -50,6 +80,10 @@ public class ServerController {
         }
     }
 
+    /**
+     * updateSnake is a method that moves snakes and returns the value that represents 
+     * the field area that snake's head moved on.
+    */
     private synchronized BrickType updateSnake(Snake snake) {
 
         Direction direction = snake.directions.peekFirst();
@@ -102,6 +136,9 @@ public class ServerController {
         return old;
     }
 
+    /**
+     * resetGame is a method that reset the game, create new snakes, field, fruit and timer. 
+     */
     public void resetGame() {
 
         field = new Field();
@@ -110,9 +147,14 @@ public class ServerController {
         fruit = new Fruit(field);
         fruit.generateFruit();
         timer = new Clock(1.5f);
+    }
 
-        //this.setNewGame(true);
-        //this.setGameOver(false);
+	public boolean isNewGame() {
+        return isNewGame;
+    }
+
+    public boolean isGameOver() {
+        return isGameOver;
     }
 
     public Snake getSnake1() {
