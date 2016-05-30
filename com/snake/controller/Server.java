@@ -255,24 +255,29 @@ public class Server {
     }
 
     private States ServeError() throws IOException {
-        int socketclose = 0;
-        if(error1 == false || error2 == false) {
-            if(error1 == false) {
-                toClient.setProtocolFlag(ProtocolFlag.ERROR);
-                sendMessageToClient(serverController.getSnake1().getIDSnake());
-                socket.close();
-                socketclose++;
-                oos2.close();
-                ois2.close();
-            }
-            if(error2 == false) {
-                toClient.setProtocolFlag(ProtocolFlag.ERROR);
-                sendMessageToClient(serverController.getSnake2().getIDSnake());
-                if(socketclose == 0)
+        try {
+            int socketclose = 0;
+            if (error1 == false || error2 == false) {
+                if (error1 == false) {
+                    toClient.setProtocolFlag(ProtocolFlag.ERROR);
+                    sendMessageToClient(serverController.getSnake1().getIDSnake());
                     socket.close();
-                oos1.close();
-                ois1.close();
+                    socketclose++;
+                    oos2.close();
+                    ois2.close();
+                }
+                if (error2 == false) {
+                    toClient.setProtocolFlag(ProtocolFlag.ERROR);
+                    sendMessageToClient(serverController.getSnake2().getIDSnake());
+                    if (socketclose == 0)
+                        socket.close();
+                    oos1.close();
+                    ois1.close();
+                }
             }
+        } catch (IOException e ) {
+            System.out.print("Fatal Error!");
+            System.exit(1);
         }
         error1 = false;
         error2 = false;

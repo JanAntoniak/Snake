@@ -27,9 +27,14 @@ public class Client {
     }
 
     public void closeAll() throws IOException {
-        oos.flush();
-        oos.close();
-        socket.close();
+        try{
+            oos.flush();
+            oos.close();
+            socket.close();
+        } catch(IOException e) {
+            System.out.print("Fatal Error!");
+            System.exit(1);
+        }
     }
 
     public void Start(String hostName) throws Exception {
