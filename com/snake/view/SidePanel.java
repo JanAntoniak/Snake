@@ -5,6 +5,11 @@ import java.awt.*;
 import java.io.Serializable;
 import com.snake.model.*;
 
+/**
+ * <h1>SidePanel</h1>
+ * Panel showing short instruction and actual score,
+ */
+
 public class SidePanel extends JPanel implements Serializable{
 
     private ClientFrame clientFrame;
@@ -17,12 +22,21 @@ public class SidePanel extends JPanel implements Serializable{
     private static final Font FONT_BIG = new Font("Garamond", Font.BOLD, 19);
     private static final Font FONT_SMALL = new Font("Garamond", Font.PLAIN, 13);
 
+    /**
+     * Constructor set dimensions and background color
+     * @param clientFrame
+     * @see ClientFrame
+     */
     public SidePanel(ClientFrame clientFrame) {
         this.clientFrame = clientFrame;
         setPreferredSize(new Dimension(300, BoardPanel.TILE_SIZE * BoardPanel.BOARD_HEIGHT));
         setBackground( new Color(73, 144, 68) );
     }
 
+    /**
+     * Method painting all strings on the left side of ClientFrame
+     * @param g
+     */
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);

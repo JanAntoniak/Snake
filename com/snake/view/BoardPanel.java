@@ -7,6 +7,11 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 import com.snake.model.*;
 
+/**
+ * <h1>BoardPanel</h1>
+ * Class which paints all field made with different types of bricks
+ */
+
 public class BoardPanel extends JPanel {
     
 	public static final int BOARD_HEIGHT = 30;
@@ -15,6 +20,11 @@ public class BoardPanel extends JPanel {
     private static final Font FONT = new Font("Tahoma", Font.BOLD, 25);
     private ClientFrame clientFrame;
 
+    /**
+     * BoardPanel uses ClientFrame and sets defaults dimensions of the window
+     * @param clientFrame default frame for client application
+     * @see ClientFrame
+     */
     public BoardPanel(ClientFrame clientFrame) {
         super();
         this.clientFrame = clientFrame;
@@ -23,10 +33,15 @@ public class BoardPanel extends JPanel {
         setBackground(new Color(60, 63, 65));
     }
 
+    /**
+     * Overridden method inherited from JPanel uses for drawing all blocks and alerts
+     * @param g
+     * @see JPanel
+     * @see Graphics
+     */
     @Override
     public synchronized void paintComponent(Graphics g) {
         super.paintComponent(g);
-        System.out.print("qweqweqweqw ");
         for(int x = 0; x < BOARD_WIDTH; x++) {
             for(int y = 0; y < BOARD_HEIGHT; y++) {
                 BrickType type = clientFrame.getField().getType(x, y);
@@ -87,6 +102,15 @@ public class BoardPanel extends JPanel {
 
     }
 
+    /**
+     * Specialised class for drawing different types of bricks
+     * @param x coordinate
+     * @param y coordinate
+     * @param type Enum type
+     * @param g
+     *
+     * @see BrickType
+     */
     private void drawBrick(int x, int y, BrickType type, Graphics g) {
 
         switch(type) {

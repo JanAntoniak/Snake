@@ -4,6 +4,11 @@ import java.io.Serializable;
 import java.util.Random;
 import com.snake.view.*;
 
+/**
+ * <h1>Fruit</h1>
+ * Class use for fruit coordinates generating.
+ *
+ */
 public class Fruit implements Serializable{
 
     private Point position;
@@ -11,15 +16,27 @@ public class Fruit implements Serializable{
     private Random random;
     private int value;
 
+    /**
+     *
+     * @param field Fruit is strictly connected with particular field
+     */
     public Fruit(Field field) {
         this.position = new Point(1,10);
         this.field = field;
         this.random = new Random();
     }
 
+    /**
+     * Empty constructor used in initial messages
+     * @see MessageToClient
+     */
     public Fruit() {
     }
 
+    /**
+     * This method use Random class to generate new coordinates for the fruit, then it place it on the field
+     * @see Field
+     */
     public void generateFruit() {
         do {
             int w = BoardPanel.BOARD_HEIGHT - 1;
@@ -32,10 +49,18 @@ public class Fruit implements Serializable{
         field.setFruit(position);
     }
 
+    /**
+     *
+     * @return value of actual fruit
+     */
     public int getValue() {
         return value;
     }
 
+    /**
+     *
+     * @return actual position of fruit
+     */
     public Point getPosition() {
         return position;
     }

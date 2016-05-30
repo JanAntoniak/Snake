@@ -2,6 +2,12 @@ package com.snake.model;
 
 import java.io.Serializable;
 
+/**
+ * <h1>Point</h1>
+ * Class containing x and y coordinates represented by two integer numbers
+ * @see Serializable
+ */
+
 public class Point implements Serializable{
     public int x;
     public int y;
@@ -11,6 +17,11 @@ public class Point implements Serializable{
         this.y = y;
     }
 
+    /**
+     * Classic Equal method
+     * @param object
+     * @return true if object is point and has the same coordinates
+     */
     public boolean Equals(Object object) {
         if (this == object) return true;
         if (!(object instanceof Point)) return false;

@@ -2,6 +2,15 @@ package com.snake.model;
 
 import java.io.Serializable;
 
+/**
+ * <h1>MessageToServer</h1>
+ * Class uses in communications protocol. Contains data sends from clients to server.
+ * Players sends only directions, all calculations are made on server.
+ * @see Serializable
+ * @see com.snake.controller.Server
+ * @see com.snake.controller.Client
+ */
+
 public class MessageToServer implements Serializable {
 
     private Direction direction;
@@ -17,6 +26,11 @@ public class MessageToServer implements Serializable {
         this.direction = Direction.UP;
     }
 
+    /**
+     *
+     * @return actually sending protocol flag
+     * @see ProtocolFlag
+     */
     public ProtocolFlag getProtocolFlag() {
         return protocolFlag;
     }
@@ -25,6 +39,10 @@ public class MessageToServer implements Serializable {
         this.protocolFlag = protocolFlag;
     }
 
+    /**
+     *
+     * @return move which come from player
+     */
     public Direction getDirection() {
         return direction;
     }
