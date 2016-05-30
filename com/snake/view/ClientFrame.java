@@ -11,6 +11,13 @@ import java.util.LinkedList;
 import com.snake.model.*;
 import com.snake.controller.*;
 
+/**
+ * <h1>BoardPanel</h1>
+ * Class which prepare the environment for displaying ClientFrame
+ *
+ * @see ClientFrame
+ */
+
 public class ClientFrame extends JFrame {
 
     boolean ready = false;
@@ -30,6 +37,10 @@ public class ClientFrame extends JFrame {
     private final Client client;
     private boolean exit = false;
 
+    /**
+     * Constructor creating all necessary object for client application
+     * @param client
+     */
     public ClientFrame(final Client client) {
         super("Snake");
         this.client = client;
@@ -127,6 +138,9 @@ public class ClientFrame extends JFrame {
         this.isGameOver = state;
     }
 
+    /**
+     * Method which adds listeners enables moving snakes
+     */
     private void addKeyListener() {
         addKeyListener(new KeyAdapter() {
 
