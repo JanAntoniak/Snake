@@ -8,27 +8,105 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import com.snake.model.*;
 
-
+/**
+* Server Client that is responsible for take the 
+* message from the client, call calculating positions and collisions 
+* and send the message to the client.
+* The protocol used here is describe in SnakeProtocol.md in catalog model.
+*/
 public class Server {
 
+	/**
+	 * The actual state is a variable that says what state the client is in.
+	 */
     private static States actualState;
+    
+    /**
+	 * FromPlayer1 is a MessageToServer instance. 
+	 * This is an object that is taken from the client1.
+	 * It contains direction of the snake. 
+	 */
     private static MessageToServer fromPlayer1;
+    
+    /**
+	 * FromPlayer2 is a MessageToServer instance. 
+	 * This is an object that is taken from the client2.
+	 * It contains direction of the snake. 
+	 */
     private static MessageToServer fromPlayer2;
+    
+	/**
+	 * toClient is a MessageToClient instance. 
+	 * This is an object that should be send to the client.
+	 * It contains Snakes and Fruit positions, 
+	 * flags if the game is over and if so the winner. 
+	 */
     private static MessageToClient toClient;
+    
+    /**
+	 * The ServerSocketChannel instance.
+	 */
     private ServerSocketChannel server = null;
+    
+	/**
+	 * The SocketChannel instance.
+	 */
     SocketChannel socket = null;
+    
+	/**
+	 * The SocketChannel instance.
+	 */
     SocketChannel socket2 = null;
+    
+	/**
+	 * The ObjectInputStream instance.
+	 */
     ObjectInputStream ois1 = null;
+    
+	/**
+	 * The ObjectOutputStream instance.
+	 */
     ObjectOutputStream oos1 = null;
+    
+	/**
+	 * The ObjectInputStream instance.
+	 */
     ObjectInputStream ois2 = null;
+    
+	/**
+	 * The ObjectOutputStream instance.
+	 */
     ObjectOutputStream oos2 = null;
+    
+	/**
+	 * The ServerController instance.
+	 */
     ServerController serverController = null;
+    
+	/**
+	 * The Clock instance.
+	 */
     public Clock timer;
+    
+	/**
+	 * The number of milliseconds that should pass between each frame.
+	 */
     private static final long FRAME_TIME = 1500L / 50L;
+    
+	/**
+	 * The flag that says if client1 has crashed.
+	 */
     private boolean error1 = false;
+    
+	/**
+	 * The flag that says if client1 has crashed.
+	 */
     private boolean error2 = false;
 
-
+	/**
+     * The constructor of Server class.
+     * There are created new messages, timer and set the first state.
+     */
     public Server() {
         actualState = States.ESTABLISHING;
         fromPlayer1 = new MessageToServer();
@@ -37,6 +115,10 @@ public class Server {
         this.timer = new Clock(2.5f);
     }
 
+    /**
+     * Start method starts the Server. It connects with client and
+     * control states of the game calling proper methods. 
+     */ 
     public void Start() throws Exception {
 
         try {
@@ -83,6 +165,9 @@ public class Server {
         sv.Start();
     }
 
+    /**
+     * statrs whole protocol.
+     */
     private States Establish() throws IOException, ClassNotFoundException {
 
         server = ServerSocketChannel.open();
@@ -137,6 +222,9 @@ public class Server {
         return States.PREPARING;
     }
 
+    /**
+     * Prepare method prepares sERVER to play the game.
+     */
     private States Prepare() throws IOException, ClassNotFoundException, InterruptedException {
         try {
             fromPlayer1 = (MessageToServer) (ois1.readObject());
@@ -174,6 +262,10 @@ public class Server {
         return States.GAME;
     }
 
+    /**
+     *  Takes messages from clients, calculates new positions,
+     * checks collisions and sends messages to the clients.  
+     */
     private synchronized States Move() throws IOException, ClassNotFoundException, InterruptedException {
 
         serverController.setNewGame(true);
@@ -234,6 +326,11 @@ public class Server {
         return States.PREPARING;
     }
 
+    /**
+     * When the game is over it returns Establishing states to 
+     * establish new connection. If there were any errors on the clients' sides 
+     * it sends message with error to the other client. 
+     */
     private States EndGame() throws IOException {
 
         toClient.setProtocolFlag(ProtocolFlag.GAMEOVER);
@@ -254,6 +351,10 @@ public class Server {
         return States.ESTABLISHING;
     }
 
+    /**
+     *  If there are any problems with clients, 
+     *  application is closed.
+     */ 
     private States ServeError() throws IOException {
         try {
             int socketclose = 0;
@@ -285,6 +386,9 @@ public class Server {
         return States.ESTABLISHING;
     }
 
+    /**
+     * Sets message to client
+     */ 
     public void setMessageToClient(int IDSnake) {
         switch(IDSnake) {
             case 1:
@@ -300,6 +404,9 @@ public class Server {
         toClient.setGameOver(serverController.isGameOver());
     }
 
+    /**
+     * Sends message to client.
+     */ 
     public void sendMessageToClient(int IDSnake) throws IOException {
 
         switch(IDSnake) {
