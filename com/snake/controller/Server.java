@@ -45,27 +45,22 @@ public class Server {
             while (true) {
                 switch (actualState) {
                     case ESTABLISHING:
-                        System.out.print("est ");
                         actualState = Establish();
                         break;
 
                     case PREPARING:
-                        System.out.print("pre ");
                         actualState = Prepare();
                         break;
 
                     case GAME:
-                        System.out.print("mv ");
                         actualState = Move();
                         break;
 
                     case END:
-                        System.out.print("end ");
                         actualState = EndGame();
                         break;
 
                     case ERROR:
-                        System.out.print("err ");
                         actualState = ServeError();
                         break;
 

@@ -42,22 +42,18 @@ public class Client {
 
             switch (actualState) {
                 case ESTABLISHING:
-                    System.out.print("est ");
                     actualState = Establish();
                     break;
 
                 case PREPARING:
-                    System.out.print("prep ");
                     actualState = Prepare();
                     break;
 
                 case GAME:
-                    System.out.print("game ");
                     actualState = Game();
                     break;
 
                 case ERROR:
-                    System.out.print("errr ");
                     actualState = ServeError();
 
             }
@@ -71,9 +67,7 @@ public class Client {
         toServer.setProtocolFlag(ProtocolFlag.REQUEST);
 
         try{
-            oos.reset();
-            oos.writeObject(toServer);
-            oos.flush();
+            this.writeToServer(toServer);
         } catch(IOException e) {
             return States.ERROR;
         }
@@ -102,9 +96,7 @@ public class Client {
         }
         toServer = new MessageToServer(ProtocolFlag.STARTGAME);
         try {
-            oos.reset();
-            oos.writeObject(toServer);
-            oos.flush();
+            this.writeToServer(toServer);
         } catch(IOException e) {
             return States.ERROR;
         }
@@ -131,9 +123,7 @@ public class Client {
         toServer.setProtocolFlag(ProtocolFlag.STARTGAME);
         toServer.setDirection(clientFrame.getDirection());
         try {
-            oos.reset();
-            oos.writeObject(toServer);
-            oos.flush();
+            this.writeToServer(toServer);
         } catch(IOException e) {
             return States.ERROR;
         }
@@ -168,12 +158,16 @@ public class Client {
 
     private synchronized States ServeError() throws IOException, ClassNotFoundException {
         clientFrame.setExit(true);
-        System.out.print(clientFrame.isExit());
         clientFrame.repaint();
 
         return States.END;
     }
 
+    private void writeToServer(MessageToServer msg) throws IOException {
+        oos.reset();
+        oos.writeObject(msg);
+        oos.flush();
+    }
 
     public static void main(String args[]) throws Exception {
         Client cl = new Client();

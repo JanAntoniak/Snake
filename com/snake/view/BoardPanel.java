@@ -26,7 +26,6 @@ public class BoardPanel extends JPanel {
     @Override
     public synchronized void paintComponent(Graphics g) {
         super.paintComponent(g);
-        System.out.print("qweqweqweqw ");
         for(int x = 0; x < BOARD_WIDTH; x++) {
             for(int y = 0; y < BOARD_HEIGHT; y++) {
                 BrickType type = clientFrame.getField().getType(x, y);
