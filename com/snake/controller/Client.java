@@ -1,10 +1,12 @@
-package com.snake;
+package com.snake.controller;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
+import com.snake.model.*;
+import com.snake.view.*;
 
 public class Client {
 

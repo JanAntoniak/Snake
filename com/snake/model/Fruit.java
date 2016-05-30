@@ -1,27 +1,42 @@
-package com.snake;
+package com.snake.model;
 
-import com.sun.org.apache.xerces.internal.impl.dv.xs.YearDV;
-
+import java.io.Serializable;
 import java.util.Random;
+import com.snake.view.*;
 
-public class Fruit {
+public class Fruit implements Serializable{
 
-	private Point position;
-    private SnakeGame game;
+    private Point position;
+    private Field field;
     private Random random;
     private int value;
 
-    public Fruit(SnakeGame game) {
-        this.game = game;
+    public Fruit(Field field) {
+        this.position = new Point(1,10);
+        this.field = field;
         this.random = new Random();
     }
+
+    public Fruit() {
+    }
+
     public void generateFruit() {
-    	do {
-    		int position.x = random.nextInt(BoardPanel.WIDTH);
-       		int position.y = random.nextInt(BoardPanel.HEIGHT);
-        	value = random.nextInt(3) + 1;	
- 	   	} while(game.getField().getType(position.x, position.y) != BrickType.EMPTY)
-       
-        game.getField().setFruit(position);
+        do {
+            int w = BoardPanel.BOARD_HEIGHT - 1;
+            int h = BoardPanel.BOARD_WIDTH - 1;
+            position.x = random.nextInt(h);
+            position.y = random.nextInt(w);
+            value = random.nextInt(3) + 1;
+        } while(field.getType(position.x, position.y) != BrickType.EMPTY);
+
+        field.setFruit(position);
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public Point getPosition() {
+        return position;
     }
 }
