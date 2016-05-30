@@ -8,24 +8,72 @@ import java.nio.channels.SocketChannel;
 import com.snake.model.*;
 import com.snake.view.*;
 
+/**
+* Class Client that is responsible for take the 
+* message from the server, call rendering and 
+* send the message to the server.
+* The protocol used here is describe in SnakeProtocol.md in catalog model.
+*/
 public class Client {
 
+	/**
+	 * The clientFrame instance.
+	 */
     private ClientFrame clientFrame;
+    
+    /**
+	 * The actual state is a variable that says what state the client is in.
+	 */
     private static States actualState;
+    
+	/**
+	 * FromServer is a MessageToClient instance. 
+	 * This is an object that is taken from the server.
+	 * It contains Snakes and Fruit positions, 
+	 * flags if the game is over and if so the winner. 
+	 */
     private static MessageToClient fromServer;
+    
+    /**
+	 * ToServer is a MessageToServer instance. 
+	 * This is an object that is sent to the server.
+	 * It contains direction caught from the keyboard. 
+	 */
     private static MessageToServer toServer;
+    
+    /**
+	 * The ObjectOutputStream instance.
+	 */
     private ObjectOutputStream oos = null;
+
+    /**
+	 * The ObjectInputStream instance.
+	 */
     private ObjectInputStream ois = null;
+    
+    /**
+	 * The flag that says if there is any window with the game open.
+	 */
     private boolean windowOpen = false;
+    
+    /**
+	 * The SocketChannel instance.
+	 */
     private SocketChannel socket = null;
 
-
+    /**
+     * The constructor of Client class.
+     * There are created new messages and set the first state.
+     */
     public Client() {
         actualState = States.ESTABLISHING;
         fromServer = new MessageToClient();
         toServer = new MessageToServer();
     }
 
+    /**
+     * closeAll method closes the socket and stream.
+     */
     public void closeAll() throws IOException {
         try{
             oos.flush();
@@ -37,6 +85,10 @@ public class Client {
         }
     }
 
+    /**
+     * Start method starts the Client. It connects with server and
+     * control states of the game calling propr methods. 
+     */ 
     public void Start(String hostName) throws Exception {
 
         socket = SocketChannel.open(new InetSocketAddress(hostName, 7777));
@@ -68,6 +120,9 @@ public class Client {
         }
     }
 
+    /**
+     * Establish is a method that statrs whole protocol.
+     */
     private States Establish() throws IOException, ClassNotFoundException {
         toServer.setProtocolFlag(ProtocolFlag.REQUEST);
 
@@ -88,6 +143,9 @@ public class Client {
         else return States.ERROR;
     }
 
+    /**
+     * Prepare method prepares Client to play the game.
+     */
     private synchronized States Prepare() throws IOException, ClassNotFoundException, InterruptedException {
         if(windowOpen == false) {
             clientFrame = new ClientFrame(this);
@@ -122,6 +180,10 @@ public class Client {
         }
     }
 
+    /**
+     * Game is a method that takes messages from server when the game is not ended,
+     * calls render the window and sends message to server.   
+     */ 
     private States Game() throws IOException, ClassNotFoundException, InterruptedException {
 
         toServer = new MessageToServer();
@@ -161,6 +223,10 @@ public class Client {
         return States.GAME;
     }
 
+    /**
+     * ServerError method is called when there was an error
+     * and application has to be closed.
+     */ 
     private synchronized States ServeError() throws IOException, ClassNotFoundException {
         clientFrame.setExit(true);
         clientFrame.repaint();
@@ -168,6 +234,9 @@ public class Client {
         return States.END;
     }
 
+    /**
+     * writeToServer is a method that send messages to server
+     */
     private void writeToServer(MessageToServer msg) throws IOException {
         oos.reset();
         oos.writeObject(msg);
