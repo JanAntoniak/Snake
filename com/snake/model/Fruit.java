@@ -1,7 +1,8 @@
-package com.snake;
+package com.snake.model;
 
 import java.io.Serializable;
 import java.util.Random;
+import com.snake.view.*;
 
 public class Fruit implements Serializable{
 

@@ -1,10 +1,11 @@
-package com.snake;
+package com.snake.view;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import javax.swing.JPanel;
+import com.snake.model.*;
 
 public class BoardPanel extends JPanel {
     

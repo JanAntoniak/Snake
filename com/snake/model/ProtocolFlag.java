@@ -1,4 +1,4 @@
-package com.snake;
+package com.snake.model;
 
 public enum ProtocolFlag {
         REQUEST,

@@ -1,6 +1,7 @@
-package com.snake;
+package com.snake.model;
 
 import java.io.Serializable;
+import com.snake.view.*;
 
 public class Field implements Serializable{
     private BrickType[][] field;

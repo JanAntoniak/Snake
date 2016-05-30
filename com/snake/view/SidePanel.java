@@ -1,8 +1,9 @@
-package com.snake;
+package com.snake.view;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
+import com.snake.model.*;
 
 public class SidePanel extends JPanel implements Serializable{
 

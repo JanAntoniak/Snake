@@ -1,4 +1,4 @@
-package com.snake;
+package com.snake.view;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,6 +8,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.LinkedList;
+import com.snake.model.*;
+import com.snake.controller.*;
 
 public class ClientFrame extends JFrame {
 
@@ -51,8 +53,8 @@ public class ClientFrame extends JFrame {
 
         field = new Field();
         fruit = new Fruit(this.field);
-        snake1 = new Snake(field, new Point(10,10), 1);
-        snake2 = new Snake(field, new Point(15,15), 2);
+        snake1 = new Snake(field, new com.snake.model.Point(10,10), 1);
+        snake2 = new Snake(field, new com.snake.model.Point(15,15), 2);
 
 
 

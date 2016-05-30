@@ -1,5 +1,6 @@
-//tu bedzie main i uruchamianie gry
 package com.snake;
+
+import com.snake.controller.*;
 
 class AntoniusSnake {
     public static void main(String[] args) throws Exception {

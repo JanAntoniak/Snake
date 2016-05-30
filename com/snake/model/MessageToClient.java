@@ -1,4 +1,4 @@
-package com.snake;
+package com.snake.model;
 
 import java.io.Serializable;
 import java.util.ArrayDeque;
@@ -11,7 +11,7 @@ public class MessageToClient implements Serializable {
     private boolean gameOver;
     private boolean newGame;
 
-    MessageToClient() {
+    public MessageToClient() {
         MySnake = new Snake();
         OppSnake = new Snake();
         fruit = new Fruit();
