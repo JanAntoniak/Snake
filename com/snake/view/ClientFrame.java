@@ -57,7 +57,7 @@ public class ClientFrame extends JFrame {
             }
         });
         
-        setResizable(false);
+        setResizable(true);
 
         directions = new LinkedList<>();
         setSize(windowWidth, windowHeight);
@@ -66,8 +66,6 @@ public class ClientFrame extends JFrame {
         fruit = new Fruit(this.field);
         snake1 = new Snake(field, new com.snake.model.Point(10,10), 1);
         snake2 = new Snake(field, new com.snake.model.Point(15,15), 2);
-
-
 
         setLocationRelativeTo(null);
         setVisible(true);
